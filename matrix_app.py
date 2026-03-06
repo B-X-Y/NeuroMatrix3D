@@ -1,9 +1,37 @@
 import os
 import uuid
 
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, send_file
 
 from matrix_pipeline import generate_braille_model_from_text
+
+load_dotenv()
+
+
+def _get_env_str(name: str) -> str | None:
+    value = os.getenv(name)
+    if value is None or not value.strip():
+        return None
+    return value.strip()
+
+
+def _parse_bool_env(name: str, default: bool) -> bool:
+    stripped_value = _get_env_str(name)
+    if stripped_value is None:
+        return default
+    return stripped_value.lower() == "true"
+
+
+def _parse_int_env(name: str, default: int) -> int:
+    stripped_value = _get_env_str(name)
+    if stripped_value is None:
+        return default
+    try:
+        return int(stripped_value)
+    except ValueError:
+        return default
+
 
 app = Flask(__name__)
 
@@ -47,4 +75,7 @@ def download(filename):
 
 if __name__ == "__main__":
     os.makedirs(MODELS_DIR, exist_ok=True)
-    app.run(debug=True, host="0.0.0.0")
+    host = os.getenv("MATRIX_HOST", "0.0.0.0")
+    port = _parse_int_env("MATRIX_PORT", 5000)
+    debug = _parse_bool_env("MATRIX_DEBUG", False)
+    app.run(host=host, port=port, debug=debug)

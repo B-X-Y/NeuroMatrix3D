@@ -15,6 +15,34 @@ NeuroMatrix3D takes plain text input and generates downloadable STL files repres
 
 ## Installation & Setup
 
+### Configuration
+
+NeuroMatrix3D loads `MATRIX_DEBUG`, `MATRIX_PORT`, and `MATRIX_HOST` from `.env`.
+
+Copy `.env.example` to `.env` and adjust the values as needed:
+
+```bash
+cp .env.example .env
+````
+
+`MATRIX_PORT` controls both the host- and container-side ports so Docker mappings stay in sync.
+
+Example `.env.example`:
+
+```dotenv
+MATRIX_DEBUG="false"
+MATRIX_PORT="5000"
+MATRIX_HOST="0.0.0.0"
+```
+
+### Environment Variables
+
+| Variable       | Default   | Purpose                                             |
+|----------------|-----------|-----------------------------------------------------|
+| `MATRIX_DEBUG` | `false`   | Flask debug mode                                    |
+| `MATRIX_PORT`  | `5000`    | Port Flask listens on and the port Docker publishes |
+| `MATRIX_HOST`  | `0.0.0.0` | Network interface Flask binds to                    |
+
 ### Local Development
 
 ```bash
@@ -31,7 +59,8 @@ docker compose up -d --build
 
 ### Accessing the Application
 
-Access the application at `http://localhost:5000` and enter text to generate braille models.
+Access the application at `http://localhost:5000` and enter text to generate braille models (or
+`http://localhost:<MATRIX_PORT>` when overridden via `.env`).
 
 ## Architecture Overview
 
