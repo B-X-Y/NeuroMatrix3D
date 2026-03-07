@@ -73,3 +73,7 @@ Access the application at `http://localhost:5000` and enter text to generate bra
 
 UEB Grade 2 (Unified English Braille Grade 2) is the standard contracted braille format that uses abbreviations and
 contractions to reduce reading volume while maintaining readability.
+
+## License
+
+NeuroMatrix3D is licensed under the [MIT License](./LICENSE).
