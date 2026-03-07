@@ -6,7 +6,8 @@ services:
     volumes:
       - ./models:/app/models
     env_file:
-      - .env
+      - path: .env
+        required: false
     ports:
       - "${MATRIX_PORT:-5000}:${MATRIX_PORT:-5000}"
     tty: true
