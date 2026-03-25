@@ -48,7 +48,13 @@ MATRIX_SESSION_SIGNING_KEY="changeme"
 ### Local Development
 
 ```bash
-apt update && apt install -y python3 python3-pip python3-louis openscad
+apt update && apt install -y git python3 python3-pip python3-louis openscad
+
+git clone https://github.com/B-X-Y/NeuroMatrix3D.git
+cd NeuroMatrix3D
+
+python3 -m venv .venv
+. .venv/bin/activate
 pip install -r requirements.txt
 python3 matrix_app.py
 ```
@@ -56,6 +62,11 @@ python3 matrix_app.py
 ### Docker Deployment
 
 ```bash
+apt update && apt install -y git
+
+git clone https://github.com/B-X-Y/NeuroMatrix3D.git
+cd NeuroMatrix3D
+
 docker compose up -d --build
 ```
 
