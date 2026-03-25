@@ -1,5 +1,6 @@
 import os
 import secrets
+import time
 import uuid
 
 from dotenv import load_dotenv
@@ -38,6 +39,22 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = _get_env_str("MATRIX_SESSION_SIGNING_KEY") or secrets.token_urlsafe(32)
 
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
+TEMP_FILE_TTL_SECONDS = 600
+
+
+def _cleanup_expired_temporary_models() -> None:
+    os.makedirs(MODELS_DIR, exist_ok=True)
+    cutoff = time.time() - TEMP_FILE_TTL_SECONDS
+
+    for entry in os.scandir(MODELS_DIR):
+        if not entry.is_file() or not entry.name.endswith(".stl"):
+            continue
+
+        try:
+            if entry.stat().st_mtime < cutoff:
+                os.remove(entry.path)
+        except FileNotFoundError:
+            continue
 
 
 def _get_or_create_session_id() -> str:
@@ -52,11 +69,13 @@ def _get_or_create_session_id() -> str:
 
 @app.route("/")
 def index():
+    _cleanup_expired_temporary_models()
     return render_template("index.html")
 
 
 @app.route("/generate", methods=["POST"])
 def generate():
+    _cleanup_expired_temporary_models()
     text = request.form.get("text", "")
     session_id = _get_or_create_session_id()
     generation_id = uuid.uuid4().hex[:7]
@@ -89,6 +108,7 @@ def generate():
 
 @app.route("/download/<filename>")
 def download(filename):
+    _cleanup_expired_temporary_models()
     generated_files = session.get("generated_files")
     if not isinstance(generated_files, list) or filename not in generated_files:
         abort(404)
