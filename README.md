@@ -17,13 +17,13 @@ NeuroMatrix3D takes plain text input and generates downloadable STL files repres
 
 ### Configuration
 
-NeuroMatrix3D loads `MATRIX_DEBUG`, `MATRIX_PORT`, and `MATRIX_HOST` from `.env`.
+NeuroMatrix3D loads `MATRIX_DEBUG`, `MATRIX_PORT`, `MATRIX_HOST`, and `MATRIX_SESSION_SIGNING_KEY` from `.env`.
 
 Copy `.env.example` to `.env` and adjust the values as needed:
 
 ```bash
 cp .env.example .env
-````
+```
 
 `MATRIX_PORT` controls both the host- and container-side ports so Docker mappings stay in sync.
 
@@ -33,15 +33,17 @@ Example `.env.example`:
 MATRIX_DEBUG="false"
 MATRIX_PORT="5000"
 MATRIX_HOST="0.0.0.0"
+MATRIX_SESSION_SIGNING_KEY="changeme"
 ```
 
 ### Environment Variables
 
-| Variable       | Default   | Purpose                                             |
-|----------------|-----------|-----------------------------------------------------|
-| `MATRIX_DEBUG` | `false`   | Flask debug mode                                    |
-| `MATRIX_PORT`  | `5000`    | Port Flask listens on and the port Docker publishes |
-| `MATRIX_HOST`  | `0.0.0.0` | Network interface Flask binds to                    |
+| Variable                     | Default    | Purpose                                             |
+|------------------------------|------------|-----------------------------------------------------|
+| `MATRIX_DEBUG`               | `false`    | Flask debug mode                                    |
+| `MATRIX_PORT`                | `5000`     | Port Flask listens on and the port Docker publishes |
+| `MATRIX_HOST`                | `0.0.0.0`  | Network interface Flask binds to                    |
+| `MATRIX_SESSION_SIGNING_KEY` | `changeme` | Flask session-signing secret                        |
 
 ### Local Development
 

@@ -1,8 +1,9 @@
 import os
+import secrets
 import uuid
 
 from dotenv import load_dotenv
-from flask import Flask, render_template, request, send_file
+from flask import Flask, abort, render_template, request, send_file, session
 
 from matrix_pipeline import generate_braille_model_from_text
 
@@ -34,8 +35,19 @@ def _parse_int_env(name: str, default: int) -> int:
 
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = _get_env_str("MATRIX_SESSION_SIGNING_KEY") or secrets.token_urlsafe(32)
 
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
+
+
+def _get_or_create_session_id() -> str:
+    existing_session_id = session.get("session_id")
+    if isinstance(existing_session_id, str) and existing_session_id.strip():
+        return existing_session_id
+
+    new_session_id = uuid.uuid4().hex
+    session["session_id"] = new_session_id
+    return new_session_id
 
 
 @app.route("/")
@@ -46,8 +58,9 @@ def index():
 @app.route("/generate", methods=["POST"])
 def generate():
     text = request.form.get("text", "")
-    session_id = str(uuid.uuid4())
-    output_filename = f"braille_model_{session_id}.stl"
+    session_id = _get_or_create_session_id()
+    generation_id = uuid.uuid4().hex[:7]
+    output_filename = f"braille_model_{session_id[:7]}_{generation_id}.stl"
     output_path = os.path.join(MODELS_DIR, output_filename)
 
     def get_float_or_none(key):
@@ -65,11 +78,21 @@ def generate():
         max_page_width=get_float_or_none("max_page_width"),
     )
 
+    generated_files = session.get("generated_files")
+    if not isinstance(generated_files, list):
+        generated_files = []
+    generated_files.append(output_filename)
+    session["generated_files"] = generated_files[-3:]
+
     return render_template("download.html", filename=output_filename)
 
 
 @app.route("/download/<filename>")
 def download(filename):
+    generated_files = session.get("generated_files")
+    if not isinstance(generated_files, list) or filename not in generated_files:
+        abort(404)
+
     return send_file(os.path.join(MODELS_DIR, filename), as_attachment=True)
 
 
