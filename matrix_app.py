@@ -45,6 +45,7 @@ gen_semaphore = Semaphore(2)
 
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
 TEMP_FILE_TTL_SECONDS = 600
+MAX_TEXT_LENGTH = 800
 
 
 def _cleanup_expired_temporary_models() -> None:
@@ -85,6 +86,8 @@ def index():
 def generate():
     _cleanup_expired_temporary_models()
     text = request.form.get("text", "")
+    if len(text) > MAX_TEXT_LENGTH:
+        abort(400, description="Text exceeds maximum length.")
     semaphore_acquired = gen_semaphore.acquire(blocking=False)
     if not semaphore_acquired:
         abort(503, description="Please try again later.")
