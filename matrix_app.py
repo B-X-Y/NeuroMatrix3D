@@ -1,5 +1,6 @@
 import os
 import secrets
+import subprocess
 import time
 import uuid
 from threading import Semaphore
@@ -45,6 +46,7 @@ gen_semaphore = Semaphore(2)
 
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
 TEMP_FILE_TTL_SECONDS = 600
+GEN_TIMEOUT_SECONDS = 180
 MAX_TEXT_LENGTH = 800
 
 
@@ -110,7 +112,12 @@ def generate():
             column_spacing=get_float_or_none("column_spacing"),
             page_thickness=get_float_or_none("page_thickness"),
             max_page_width=get_float_or_none("max_page_width"),
+            gen_timeout_seconds=GEN_TIMEOUT_SECONDS
         )
+    except subprocess.TimeoutExpired:
+        if os.path.exists(output_path):
+            os.remove(output_path)
+        abort(503, description="Generation timed out.")
     finally:
         gen_semaphore.release()
 

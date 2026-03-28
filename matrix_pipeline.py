@@ -22,6 +22,7 @@ def generate_braille_model_from_text(
         column_spacing: float | None = None,
         page_thickness: float | None = None,
         max_page_width: float | None = None,
+        gen_timeout_seconds: float | None = None,
 ) -> None:
     tables = ["braille-patterns.cti", "en-us-g2.ctb"]
     braille_text = louis.translateString(tables, text)
@@ -45,4 +46,4 @@ def generate_braille_model_from_text(
 
     openscad_args.append("matrix_generator.scad")
 
-    subprocess.run(openscad_args, capture_output=True, text=True)
+    subprocess.run(openscad_args, capture_output=True, text=True, timeout=gen_timeout_seconds)
