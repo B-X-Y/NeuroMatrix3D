@@ -5,6 +5,8 @@ import uuid
 
 from dotenv import load_dotenv
 from flask import Flask, abort, render_template, request, send_file, session
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 from matrix_pipeline import generate_braille_model_from_text
 
@@ -37,6 +39,7 @@ def _parse_int_env(name: str, default: int) -> int:
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = _get_env_str("MATRIX_SESSION_SIGNING_KEY") or secrets.token_urlsafe(32)
+limiter = Limiter(get_remote_address, app=app, default_limits=[])
 
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
 TEMP_FILE_TTL_SECONDS = 600
@@ -68,12 +71,15 @@ def _get_or_create_session_id() -> str:
 
 
 @app.route("/")
+@limiter.limit("300/minute", error_message="Please try again later.")
 def index():
     _cleanup_expired_temporary_models()
     return render_template("index.html")
 
 
 @app.route("/generate", methods=["POST"])
+@limiter.limit("120/hour", error_message="Please try again later.")
+@limiter.limit("20/hour;2/minute", key_func=_get_or_create_session_id, error_message="Please try again later.")
 def generate():
     _cleanup_expired_temporary_models()
     text = request.form.get("text", "")
@@ -107,6 +113,8 @@ def generate():
 
 
 @app.route("/download/<filename>")
+@limiter.limit("120/minute", error_message="Please try again later.")
+@limiter.limit("20/minute", key_func=_get_or_create_session_id, error_message="Please try again later.")
 def download(filename):
     _cleanup_expired_temporary_models()
     generated_files = session.get("generated_files")
