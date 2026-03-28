@@ -2,6 +2,7 @@ import os
 import secrets
 import time
 import uuid
+from threading import Semaphore
 
 from dotenv import load_dotenv
 from flask import Flask, abort, render_template, request, send_file, session
@@ -40,6 +41,7 @@ def _parse_int_env(name: str, default: int) -> int:
 app = Flask(__name__)
 app.config["SECRET_KEY"] = _get_env_str("MATRIX_SESSION_SIGNING_KEY") or secrets.token_urlsafe(32)
 limiter = Limiter(get_remote_address, app=app, default_limits=[])
+gen_semaphore = Semaphore(2)
 
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
 TEMP_FILE_TTL_SECONDS = 600
@@ -83,6 +85,9 @@ def index():
 def generate():
     _cleanup_expired_temporary_models()
     text = request.form.get("text", "")
+    semaphore_acquired = gen_semaphore.acquire(blocking=False)
+    if not semaphore_acquired:
+        abort(503, description="Please try again later.")
     session_id = _get_or_create_session_id()
     generation_id = uuid.uuid4().hex[:7]
     output_filename = f"braille_model_{session_id[:7]}_{generation_id}.stl"
@@ -92,16 +97,19 @@ def generate():
         value = request.form.get(key, "")
         return float(value) if value.strip() else None
 
-    generate_braille_model_from_text(
-        text,
-        output_path,
-        dot_radius=get_float_or_none("dot_radius"),
-        dot_spacing=get_float_or_none("dot_spacing"),
-        row_spacing=get_float_or_none("row_spacing"),
-        column_spacing=get_float_or_none("column_spacing"),
-        page_thickness=get_float_or_none("page_thickness"),
-        max_page_width=get_float_or_none("max_page_width"),
-    )
+    try:
+        generate_braille_model_from_text(
+            text,
+            output_path,
+            dot_radius=get_float_or_none("dot_radius"),
+            dot_spacing=get_float_or_none("dot_spacing"),
+            row_spacing=get_float_or_none("row_spacing"),
+            column_spacing=get_float_or_none("column_spacing"),
+            page_thickness=get_float_or_none("page_thickness"),
+            max_page_width=get_float_or_none("max_page_width"),
+        )
+    finally:
+        gen_semaphore.release()
 
     generated_files = session.get("generated_files")
     if not isinstance(generated_files, list):
