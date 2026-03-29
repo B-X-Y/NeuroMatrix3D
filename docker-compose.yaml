@@ -1,5 +1,6 @@
 services:
   app:
+    container_name: neuromatrix3d
     build:
       context: .
       dockerfile: Dockerfile
