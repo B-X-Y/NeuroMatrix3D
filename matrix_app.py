@@ -141,7 +141,10 @@ def download(filename):
     if not isinstance(generated_files, list) or filename not in generated_files:
         abort(404, description="File not found or no longer available.")
 
-    return send_file(os.path.join(MODELS_DIR, filename), as_attachment=True)
+    try:
+        return send_file(os.path.join(MODELS_DIR, filename), as_attachment=True)
+    except FileNotFoundError:
+        abort(404, description="File expired or already removed.")
 
 
 if __name__ == "__main__":
