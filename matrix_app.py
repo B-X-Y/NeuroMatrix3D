@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from flask import Flask, abort, render_template, request, send_file, session
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from matrix_pipeline import generate_braille_model_from_text
 
@@ -41,6 +42,7 @@ def _parse_int_env(name: str, default: int) -> int:
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = _get_env_str("MATRIX_SESSION_SIGNING_KEY") or secrets.token_urlsafe(32)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1, x_prefix=1)
 limiter = Limiter(get_remote_address, app=app, default_limits=[])
 gen_semaphore = Semaphore(2)
 
