@@ -43,7 +43,16 @@ def _parse_int_env(name: str, default: int) -> int:
 app = Flask(__name__)
 app.config["SECRET_KEY"] = _get_env_str("MATRIX_SESSION_SIGNING_KEY") or secrets.token_urlsafe(32)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1, x_prefix=1)
-limiter = Limiter(get_remote_address, app=app, default_limits=[])
+if _parse_bool_env("MATRIX_RATE_LIMIT_ENABLED", True):
+    limiter = Limiter(get_remote_address, app=app, default_limits=[])
+else:
+    class UnlimitedLimiter:
+        @staticmethod
+        def limit(*args, **kwargs):
+            return lambda f: f
+
+
+    limiter = UnlimitedLimiter()
 gen_semaphore = Semaphore(2)
 
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")

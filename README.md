@@ -17,7 +17,8 @@ NeuroMatrix3D takes plain text input and generates downloadable STL files repres
 
 ### Configuration
 
-NeuroMatrix3D loads `MATRIX_DEBUG`, `MATRIX_PORT`, `MATRIX_HOST`, and `MATRIX_SESSION_SIGNING_KEY` from `.env`.
+NeuroMatrix3D loads `MATRIX_DEBUG`, `MATRIX_PORT`, `MATRIX_HOST`, `MATRIX_SESSION_SIGNING_KEY`, and
+`MATRIX_RATE_LIMIT_ENABLED` from `.env`.
 
 Copy `.env.example` to `.env` and adjust the values as needed:
 
@@ -34,6 +35,7 @@ MATRIX_DEBUG="false"
 MATRIX_PORT="5000"
 MATRIX_HOST="0.0.0.0"
 MATRIX_SESSION_SIGNING_KEY="changeme"
+MATRIX_RATE_LIMIT_ENABLED="true"
 ```
 
 ### Environment Variables
@@ -44,6 +46,7 @@ MATRIX_SESSION_SIGNING_KEY="changeme"
 | `MATRIX_PORT`                | `5000`     | Port Flask listens on and the port Docker publishes |
 | `MATRIX_HOST`                | `0.0.0.0`  | Network interface Flask binds to                    |
 | `MATRIX_SESSION_SIGNING_KEY` | `changeme` | Flask session-signing secret                        |
+| `MATRIX_RATE_LIMIT_ENABLED`  | `true`     | Enables or disables Flask request rate limiting     |
 
 ### Local Development
 
