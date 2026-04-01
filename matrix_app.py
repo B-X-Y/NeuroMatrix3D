@@ -139,7 +139,7 @@ def download(filename):
     _cleanup_expired_temporary_models()
     generated_files = session.get("generated_files")
     if not isinstance(generated_files, list) or filename not in generated_files:
-        abort(404)
+        abort(404, description="File not found or no longer available.")
 
     return send_file(os.path.join(MODELS_DIR, filename), as_attachment=True)
 
