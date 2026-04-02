@@ -17,6 +17,7 @@ RUN pip3 install -r requirements.txt
 COPY matrix_pipeline.py .
 COPY matrix_generator.scad .
 COPY matrix_app.py .
+COPY static ./static
 COPY templates ./templates
 
 CMD ["python3", "matrix_app.py"]

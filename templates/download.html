@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <title>NeuroMatrix3D</title>
 </head>
-<body>
+<body data-status-url="{{ url_for("generation_status", job_id=job_id) }}">
 <h1>NeuroMatrix3D</h1>
 <p>
     Source code: <a href="https://github.com/B-X-Y/NeuroMatrix3D" target="_blank" rel="noopener noreferrer">GitHub
     Repository</a>
-</p>
-<a href="/download/{{ filename }}">
+<p id="generation-error" hidden></p>
+<a href="/download/{{ filename }}" id="download-link" hidden>
     <button>Download Braille Model</button>
 </a>
+<script src="{{ url_for("static", filename="js/download-status.js") }}"></script>
 </body>
 </html>
