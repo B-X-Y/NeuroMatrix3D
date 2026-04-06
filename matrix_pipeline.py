@@ -46,4 +46,4 @@ def generate_braille_model_from_text(
 
     openscad_args.append("matrix_generator.scad")
 
-    subprocess.run(openscad_args, capture_output=True, text=True, timeout=gen_timeout_seconds)
+    subprocess.run(openscad_args, capture_output=True, text=True, timeout=gen_timeout_seconds, check=True)
