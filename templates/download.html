@@ -2,19 +2,37 @@
 <html lang="en-US">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NeuroMatrix3D</title>
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css" rel="stylesheet"/>
 </head>
-<body data-status-url="{{ url_for("generation_status", job_id=job_id) }}">
-<h1>NeuroMatrix3D</h1>
-<p>
-    Source code: <a href="https://github.com/B-X-Y/NeuroMatrix3D" target="_blank" rel="noopener noreferrer">GitHub
-    Repository</a>
-</p>
-<p id="generating-status"></p>
-<p id="generation-error" hidden></p>
-<a href="/download/{{ filename }}" id="download-link" hidden>
-    <button>Download Braille Model</button>
-</a>
-<script src="{{ url_for("static", filename="js/download-status.js") }}"></script>
+<body class="bg-light" data-status-url="{{ url_for('generation_status', job_id=job_id) }}">
+<div class="page">
+    <div class="container container-tight py-5">
+        <div class="text-center mb-4">
+            <h1 class="display-5 fw-bold">NeuroMatrix3D</h1>
+            <p class="text-secondary">
+                Source code:
+                <a href="https://github.com/B-X-Y/NeuroMatrix3D" target="_blank" rel="noopener noreferrer">
+                    GitHub Repository
+                </a>
+            </p>
+        </div>
+        <div class="card shadow-sm">
+            <div class="card-body text-center py-5">
+                <div id="loading-spinner" class="mb-4">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+                <div id="generating-status" class="text-secondary fs-3"></div>
+                <div id="generation-error" class="alert alert-danger mt-4" role="alert" hidden></div>
+                <a href="/download/{{ filename }}" id="download-link" class="btn btn-success btn-lg mt-4" hidden>
+                    Download Braille Model
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/js/tabler.min.js"></script>
+<script src="{{ url_for('static', filename='js/download-status.js') }}"></script>
 </body>
 </html>

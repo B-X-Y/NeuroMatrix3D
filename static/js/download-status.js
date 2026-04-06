@@ -1,6 +1,7 @@
 const generatingStatus = document.getElementById("generating-status");
 const generationError = document.getElementById("generation-error");
 const downloadLink = document.getElementById("download-link");
+const loadingSpinner = document.getElementById("loading-spinner");
 const statusUrl = document.body.dataset.statusUrl;
 
 let stopped = false;
@@ -10,12 +11,18 @@ function showGenerating(message) {
     generatingStatus.hidden = false;
     generationError.hidden = true;
     downloadLink.hidden = true;
+    if (loadingSpinner) {
+        loadingSpinner.hidden = false;
+    }
 }
 
 function showDownloadButton() {
-    generatingStatus.hidden = true;
+    generatingStatus.textContent = "Ready to download.";
     generationError.hidden = true;
     downloadLink.hidden = false;
+    if (loadingSpinner) {
+        loadingSpinner.hidden = true;
+    }
 }
 
 function showError(message) {
@@ -23,6 +30,9 @@ function showError(message) {
     downloadLink.hidden = true;
     generationError.textContent = message;
     generationError.hidden = false;
+    if (loadingSpinner) {
+        loadingSpinner.hidden = true;
+    }
 }
 
 async function checkGenerationStatus() {

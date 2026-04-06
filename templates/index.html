@@ -2,42 +2,70 @@
 <html lang="en-US">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NeuroMatrix3D</title>
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css" rel="stylesheet"/>
 </head>
-<body>
-<h1>NeuroMatrix3D</h1>
-<p>
-    Source code: <a href="https://github.com/B-X-Y/NeuroMatrix3D" target="_blank" rel="noopener noreferrer">GitHub
-    Repository</a>
-</p>
-<form action="/generate" method="POST" target="_blank">
-    <label>
-        <textarea name="text" rows="10" cols="50"></textarea>
-    </label>
-    <br>
-    <details>
-        <summary>Advanced Parameters</summary>
-        <p>Dot Radius: <label>
-            <input type="number" name="dot_radius" step="any">
-        </label></p>
-        <p>Dot Spacing: <label>
-            <input type="number" name="dot_spacing" step="any">
-        </label></p>
-        <p>Row Spacing: <label>
-            <input type="number" name="row_spacing" step="any">
-        </label></p>
-        <p>Column Spacing: <label>
-            <input type="number" name="column_spacing" step="any">
-        </label></p>
-        <p>Page Thickness: <label>
-            <input type="number" name="page_thickness" step="any">
-        </label></p>
-        <p>Max Page Width: <label>
-            <input type="number" name="max_page_width" step="any">
-        </label></p>
-    </details>
-    <br>
-    <button type="submit">Generate Braille Model</button>
-</form>
+<body class="bg-light">
+<div class="page">
+    <div class="container container-tight py-5">
+        <div class="text-center mb-4">
+            <h1 class="display-5 fw-bold">NeuroMatrix3D</h1>
+            <p class="text-secondary">
+                Source code:
+                <a href="https://github.com/B-X-Y/NeuroMatrix3D" target="_blank" rel="noopener noreferrer">
+                    GitHub Repository
+                </a>
+            </p>
+        </div>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form action="/generate" method="POST" target="_blank">
+                    <div class="mb-4">
+                        <label class="form-label">Input Text</label>
+                        <textarea class="form-control" name="text" rows="10"
+                                  placeholder="Enter text to generate braille model..."></textarea>
+                    </div>
+                    <details class="mb-4">
+                        <summary class="fw-bold mb-3">Advanced Parameters</summary>
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <label class="form-label">Dot Radius</label>
+                                <input type="number" class="form-control" name="dot_radius" step="any">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Dot Spacing</label>
+                                <input type="number" class="form-control" name="dot_spacing" step="any">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Row Spacing</label>
+                                <input type="number" class="form-control" name="row_spacing" step="any">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Column Spacing</label>
+                                <input type="number" class="form-control" name="column_spacing" step="any">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Page Thickness</label>
+                                <input type="number" class="form-control" name="page_thickness" step="any">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Max Page Width</label>
+                                <input type="number" class="form-control" name="max_page_width" step="any">
+                            </div>
+                        </div>
+                    </details>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            Generate Braille Model
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/js/tabler.min.js"></script>
 </body>
 </html>
