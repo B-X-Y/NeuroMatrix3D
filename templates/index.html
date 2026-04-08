@@ -5,10 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NeuroMatrix3D</title>
     <link href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css" rel="stylesheet"/>
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem("theme");
+            const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            const theme = savedTheme || (prefersDark ? "dark" : "light");
+            document.documentElement.setAttribute("data-bs-theme", theme);
+        })();
+    </script>
 </head>
-<body class="bg-light">
+<body>
 <div class="page">
     <div class="container container-tight py-5">
+        <div class="d-flex justify-content-end mb-3">
+            <label class="form-check form-switch m-0" for="theme-toggle">
+                <input class="form-check-input" type="checkbox" id="theme-toggle">
+                <span class="form-check-label">Dark mode</span>
+            </label>
+        </div>
         <div class="text-center mb-4">
             <h1 class="display-5 fw-bold">NeuroMatrix3D</h1>
             <p class="text-secondary">
@@ -67,5 +81,6 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/js/tabler.min.js"></script>
+<script src="{{ url_for("static", filename="js/theme-toggle.js") }}"></script>
 </body>
 </html>
