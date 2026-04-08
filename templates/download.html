@@ -6,7 +6,7 @@
     <title>NeuroMatrix3D</title>
     <link href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css" rel="stylesheet"/>
 </head>
-<body class="bg-light" data-status-url="{{ url_for('generation_status', job_id=job_id) }}">
+<body class="bg-light" data-status-url="{{ url_for("generation_status", job_id=job_id) }}">
 <div class="page">
     <div class="container container-tight py-5">
         <div class="text-center mb-4">
@@ -33,6 +33,6 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/js/tabler.min.js"></script>
-<script src="{{ url_for('static', filename='js/download-status.js') }}"></script>
+<script src="{{ url_for("static", filename="js/download-status.js") }}"></script>
 </body>
 </html>
