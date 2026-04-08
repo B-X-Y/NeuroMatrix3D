@@ -1,6 +1,7 @@
 (() => {
     const THEME_KEY = "theme";
     const toggle = document.getElementById("theme-toggle");
+    const systemThemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
     const getTheme = () => {
         const savedTheme = localStorage.getItem(THEME_KEY);
@@ -8,18 +9,33 @@
             return savedTheme;
         }
 
-        return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        return systemThemeQuery.matches ? "dark" : "light";
     };
 
-    const setTheme = (theme) => {
+    const setTheme = (theme, persist = true) => {
         document.documentElement.setAttribute("data-bs-theme", theme);
-        localStorage.setItem(THEME_KEY, theme);
+        if (persist) {
+            localStorage.setItem(THEME_KEY, theme);
+        }
         if (toggle) {
             toggle.checked = theme === "dark";
         }
     };
 
-    setTheme(getTheme());
+    const hasSavedTheme = () => {
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        return savedTheme === "dark" || savedTheme === "light";
+    };
+
+    setTheme(getTheme(), hasSavedTheme());
+
+    systemThemeQuery.addEventListener("change", (event) => {
+        if (hasSavedTheme()) {
+            return;
+        }
+
+        setTheme(event.matches ? "dark" : "light", false);
+    });
 
     if (!toggle) {
         return;
