@@ -2,7 +2,7 @@ FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt update && apt install -y \
+RUN apt update && apt install -y --no-install-recommends \
     python3 \
     python3-pip \
     python3-louis \
@@ -12,7 +12,7 @@ RUN apt update && apt install -y \
 WORKDIR /app
 
 COPY requirements.txt .
-RUN pip3 install -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY matrix_pipeline.py .
 COPY matrix_generator.scad .
