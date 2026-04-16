@@ -11,3 +11,4 @@ services:
       - "${MATRIX_PORT:-5000}:${MATRIX_PORT:-5000}"
     tty: true
     stdin_open: true
+    mem_limit: 2g
