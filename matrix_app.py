@@ -6,7 +6,7 @@ import uuid
 from threading import Lock, Semaphore, Thread
 
 from dotenv import load_dotenv
-from flask import Flask, abort, jsonify, render_template, request, send_file, send_from_directory, session
+from flask import Flask, Response, abort, jsonify, render_template, request, send_file, session, url_for
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -42,6 +42,10 @@ def _parse_int_env(name: str, default: int) -> int:
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = _get_env_str("MATRIX_SESSION_SIGNING_KEY") or secrets.token_urlsafe(32)
+server_name = _get_env_str("MATRIX_SERVER_NAME")
+if server_name:
+    app.config["SERVER_NAME"] = server_name
+url_scheme = _get_env_str("MATRIX_URL_SCHEME")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1, x_prefix=1)
 if _parse_bool_env("MATRIX_RATE_LIMIT_ENABLED", True):
     limiter = Limiter(get_remote_address, app=app, default_limits=[])
@@ -283,7 +287,22 @@ def download(filename):
 
 @app.route("/robots.txt")
 def robots():
-    return send_from_directory(app.static_folder, "robots.txt", mimetype="text/plain")
+    sitemap_url = url_for("sitemap", _scheme=url_scheme, _external=True)
+    return Response(
+        render_template("robots.txt", sitemap_url=sitemap_url),
+        mimetype="text/plain"
+    )
+
+
+@app.route("/sitemap.xml")
+def sitemap():
+    pages = [
+        url_for("index", _scheme=url_scheme, _external=True),
+    ]
+    return Response(
+        render_template("sitemap.xml", pages=pages),
+        mimetype="application/xml"
+    )
 
 
 if __name__ == "__main__":
