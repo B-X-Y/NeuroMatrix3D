@@ -6,7 +6,7 @@ import uuid
 from threading import Lock, Semaphore, Thread
 
 from dotenv import load_dotenv
-from flask import Flask, abort, jsonify, render_template, request, send_file, session
+from flask import Flask, abort, jsonify, render_template, request, send_file, send_from_directory, session
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -279,6 +279,11 @@ def download(filename):
         return send_file(os.path.join(MODELS_DIR, filename), as_attachment=True)
     except FileNotFoundError:
         abort(404, description="File expired or already removed.")
+
+
+@app.route("/robots.txt")
+def robots():
+    return send_from_directory(app.static_folder, "robots.txt", mimetype="text/plain")
 
 
 if __name__ == "__main__":
