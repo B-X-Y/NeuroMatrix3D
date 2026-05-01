@@ -7,6 +7,7 @@ from threading import Lock, Semaphore, Thread
 
 from dotenv import load_dotenv
 from flask import Flask, Response, abort, jsonify, render_template, request, send_file, session, url_for
+from flask_caching import Cache
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -47,6 +48,7 @@ if server_name:
     app.config["SERVER_NAME"] = server_name
 url_scheme = _get_env_str("MATRIX_URL_SCHEME")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1, x_prefix=1)
+cache = Cache(app, config={"CACHE_TYPE": "SimpleCache"})
 if _parse_bool_env("MATRIX_RATE_LIMIT_ENABLED", True):
     limiter = Limiter(get_remote_address, app=app, default_limits=[])
 else:
@@ -286,6 +288,7 @@ def download(filename):
 
 
 @app.route("/robots.txt")
+@cache.cached(timeout=0)
 def robots():
     sitemap_url = url_for("sitemap", _scheme=url_scheme, _external=True)
     return Response(
@@ -295,6 +298,7 @@ def robots():
 
 
 @app.route("/sitemap.xml")
+@cache.cached(timeout=0)
 def sitemap():
     pages = [
         url_for("index", _scheme=url_scheme, _external=True),
