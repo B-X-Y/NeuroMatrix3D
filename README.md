@@ -17,8 +17,8 @@ NeuroMatrix3D takes plain text input and generates downloadable STL files repres
 
 ### Configuration
 
-NeuroMatrix3D loads `MATRIX_DEBUG`, `MATRIX_PORT`, `MATRIX_HOST`, `MATRIX_SESSION_SIGNING_KEY`, and
-`MATRIX_RATE_LIMIT_ENABLED` from `.env`.
+NeuroMatrix3D loads `MATRIX_SERVER_NAME`, `MATRIX_URL_SCHEME`, `MATRIX_DEBUG`, `MATRIX_PORT`, `MATRIX_HOST`,
+`MATRIX_SESSION_SIGNING_KEY`, and `MATRIX_RATE_LIMIT_ENABLED` from `.env`.
 
 Copy `.env.example` to `.env` and adjust the values as needed:
 
@@ -31,6 +31,8 @@ cp .env.example .env
 Example `.env.example`:
 
 ```dotenv
+MATRIX_SERVER_NAME="localhost"
+MATRIX_URL_SCHEME="http"
 MATRIX_DEBUG="false"
 MATRIX_PORT="5000"
 MATRIX_HOST="0.0.0.0"
@@ -40,13 +42,15 @@ MATRIX_RATE_LIMIT_ENABLED="true"
 
 ### Environment Variables
 
-| Variable                     | Default    | Purpose                                             |
-|------------------------------|------------|-----------------------------------------------------|
-| `MATRIX_DEBUG`               | `false`    | Flask debug mode                                    |
-| `MATRIX_PORT`                | `5000`     | Port Flask listens on and the port Docker publishes |
-| `MATRIX_HOST`                | `0.0.0.0`  | Network interface Flask binds to                    |
-| `MATRIX_SESSION_SIGNING_KEY` | `changeme` | Flask session-signing secret                        |
-| `MATRIX_RATE_LIMIT_ENABLED`  | `true`     | Enables or disables Flask request rate limiting     |
+| Variable                     | Default     | Purpose                                                         |
+|------------------------------|-------------|-----------------------------------------------------------------|
+| `MATRIX_SERVER_NAME`         | `localhost` | Public hostname or domain used by the application               |
+| `MATRIX_URL_SCHEME`          | `http`      | URL scheme (`http` or `https`) used to construct external links |
+| `MATRIX_DEBUG`               | `false`     | Flask debug mode                                                |
+| `MATRIX_PORT`                | `5000`      | Port Flask listens on and the port Docker publishes             |
+| `MATRIX_HOST`                | `0.0.0.0`   | Network interface Flask binds to                                |
+| `MATRIX_SESSION_SIGNING_KEY` | `changeme`  | Flask session-signing secret                                    |
+| `MATRIX_RATE_LIMIT_ENABLED`  | `true`      | Enables or disables Flask request rate limiting                 |
 
 ### Local Development
 
@@ -76,7 +80,7 @@ docker compose up -d --build
 ### Accessing the Application
 
 Access the application at `http://localhost:5000` and enter text to generate braille models (or
-`http://localhost:<MATRIX_PORT>` when overridden via `.env`).
+`http://<MATRIX_SERVER_NAME>:<MATRIX_PORT>` when overridden via `.env`).
 
 ## Architecture Overview
 
