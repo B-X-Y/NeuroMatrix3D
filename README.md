@@ -1,6 +1,16 @@
-# NeuroMatrix3D
+<h1 align="center">NeuroMatrix3D</h1>
 
-A web application that converts text into 3D printable braille models for tactile reading.
+<h4 align="center">⠠⠝⠑⠥⠗⠕⠠⠍⠁⠞⠗⠊⠭⠼⠉⠰⠠⠙</h4>
+
+<p align="center">
+    <i>A web application that converts text into 3D printable braille models for tactile reading.</i>
+</p>
+
+<p align="center">
+    <img src="assets/icon-light.svg" alt="NeuroMatrix3D Logo" width="300">
+</p>
+
+---
 
 ## Project Overview
 
