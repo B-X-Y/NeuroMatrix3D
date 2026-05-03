@@ -176,7 +176,8 @@ def favicon():
 @limiter.limit("300/minute", error_message="Please try again later.")
 def index():
     _cleanup_expired_temporary_models()
-    return render_template("index.html")
+    canonical_url = url_for("index", _scheme=url_scheme, _external=True)
+    return render_template("index.html", canonical_url=canonical_url)
 
 
 @app.route("/generate", methods=["POST"])

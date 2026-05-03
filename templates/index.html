@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeuroMatrix3D</title>
+    <title>Text to Braille STL Generator for 3D Printing | NeuroMatrix3D</title>
+    <meta name="description"
+          content="NeuroMatrix3D, an open-source text-to-braille STL generator for 3D printing, enables creation of downloadable 3D-printable braille models for tactile reading, labels, signs, and accessibility projects.">
     <link rel="icon" href="/favicon.ico">
+    {% if canonical_url %}
+    <link rel="canonical" href="{{ canonical_url }}">
+    {% endif %}
     <link href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css" rel="stylesheet"/>
     <script>
         (function () {
@@ -26,6 +31,10 @@
         </div>
         <div class="text-center mb-4">
             <h1 class="display-5 fw-bold">NeuroMatrix3D</h1>
+            <p class="lead text-secondary">
+                NeuroMatrix3D converts plain text into downloadable 3D-printable braille STL files for tactile reading
+                materials, braille labels, classroom resources, signs, and accessibility projects.
+            </p>
             <p class="text-secondary">
                 Source code:
                 <a href="https://github.com/B-X-Y/NeuroMatrix3D" target="_blank" rel="noopener noreferrer">
@@ -33,8 +42,11 @@
                 </a>
             </p>
         </div>
-        <div class="card shadow-sm">
+        <div class="card shadow-sm mb-4">
             <div class="card-body">
+                <h2 id="generator-title" class="h3 mb-3">
+                    Generate a 3D-Printable Braille STL File
+                </h2>
                 <form action="/generate" method="POST" target="_blank">
                     <div class="mb-4">
                         <label class="form-label">Input Text</label>
@@ -78,6 +90,23 @@
                     </div>
                 </form>
             </div>
+        </div>
+        <div class="mb-4">
+            <h2 class="h3">Instructions</h2>
+            <ol class="text-secondary">
+                <li>Enter text into the text to the braille STL generator.</li>
+                <li>Adjust dot radius, spacing, page thickness, and page width if needed.</li>
+                <li>Generate a 3D-printable braille STL file.</li>
+                <li>Download the generated file and prepare it in slicing software for 3D printing of accessible
+                    braille materials.
+                </li>
+            </ol>
+            <h2 class="h3">Designed For</h2>
+            <p class="text-secondary">
+                NeuroMatrix3D targets educators, makers, accessibility researchers, libraries, parents, and students. It
+                enables creation of tactile reading materials, braille labels for 3D printing, and other accessible
+                3D-printed braille resources, while supporting UEB Grade 2 braille STL generation.
+            </p>
         </div>
     </div>
 </div>
