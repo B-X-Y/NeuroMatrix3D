@@ -6,7 +6,8 @@ import uuid
 from threading import Lock, Semaphore, Thread
 
 from dotenv import load_dotenv
-from flask import Flask, Response, abort, jsonify, render_template, request, send_file, session, url_for
+from flask import Flask, Response, abort, jsonify, render_template, request, send_file, send_from_directory, session, \
+    url_for
 from flask_caching import Cache
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -164,6 +165,11 @@ def _run_generation_job(
                 job["error"] = None
     finally:
         gen_semaphore.release()
+
+
+@app.route("/favicon.ico")
+def favicon():
+    return send_from_directory(app.static_folder, "favicon.ico")
 
 
 @app.route("/")
