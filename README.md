@@ -13,7 +13,7 @@
 ---
 
 ## Project Overview
-
+[Open STL](./NeuroMatrix3D.stl)
 NeuroMatrix3D takes plain text input and generates downloadable STL files representing the text in braille format. The
 3D models can be printed on standard 3D printers to create tactile reading materials.
 
