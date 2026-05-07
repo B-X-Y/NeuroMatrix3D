@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>{{ model_id }}.stl - STL Viewer</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css"/>
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/stl_viewer.css") }}"/>
+</head>
+<body class="viewer-body">
+<div class="viewer-page">
+    <div class="card viewer-card">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title mb-1">{{ model_id }}.stl</h3>
+                <div class="text-muted small">STL 3D model preview</div>
+            </div>
+            <div class="card-actions">
+                <a href="{{ download_url }}" class="btn btn-primary">Download STL</a>
+                <button type="button" class="btn" data-action="reload-viewer">Reload</button>
+                <button type="button" class="btn" data-action="fullscreen-viewer">Fullscreen</button>
+            </div>
+        </div>
+        <div class="viewer-frame-wrap">
+            <iframe id="viewerFrame" class="viewer-frame" src="{{ iframe_url }}" allowfullscreen></iframe>
+        </div>
+    </div>
+</div>
+<script src="{{ url_for("static", filename="js/stl_view.js") }}"></script>
+</body>
+</html>

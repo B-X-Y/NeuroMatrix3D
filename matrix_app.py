@@ -1,8 +1,10 @@
 import os
+import re
 import secrets
 import subprocess
 import time
 import uuid
+from pathlib import Path
 from threading import Lock, Semaphore, Thread
 
 from dotenv import load_dotenv
@@ -313,6 +315,71 @@ def sitemap():
     return Response(
         render_template("sitemap.xml", pages=pages),
         mimetype="application/xml"
+    )
+
+
+STL_DIR = Path("./models").resolve()
+MODEL_ID_RE = re.compile(r"^[a-zA-Z0-9_-]+$")
+
+
+def get_stl_path(model_id):
+    # Validate model_id to avoid unsafe file paths.
+    if not MODEL_ID_RE.match(model_id):
+        abort(400)
+
+    stl_path = STL_DIR / f"{model_id}.stl"
+
+    if not stl_path.exists():
+        abort(404)
+
+    return stl_path
+
+
+@app.route("/models/<model_id>/view")
+def view_stl(model_id):
+    get_stl_path(model_id)
+
+    return render_template(
+        "stl_view.html",
+        model_id=model_id,
+        iframe_url=url_for("view_stl_iframe", model_id=model_id),
+        download_url=url_for("download_stl", model_id=model_id),
+        file_url=url_for("get_stl_file", model_id=model_id),
+    )
+
+
+@app.route("/models/<model_id>/iframe")
+def view_stl_iframe(model_id):
+    get_stl_path(model_id)
+
+    return render_template(
+        "stl_iframe.html",
+        model_id=model_id,
+        stl_url=url_for("get_stl_file", model_id=model_id),
+    )
+
+
+@app.route("/models/<model_id>/file.stl")
+def get_stl_file(model_id):
+    stl_path = get_stl_path(model_id)
+
+    return send_file(
+        stl_path,
+        mimetype="model/stl",
+        as_attachment=False,
+        download_name=f"{model_id}.stl",
+    )
+
+
+@app.route("/models/<model_id>/download")
+def download_stl(model_id):
+    stl_path = get_stl_path(model_id)
+
+    return send_file(
+        stl_path,
+        mimetype="model/stl",
+        as_attachment=True,
+        download_name=f"{model_id}.stl",
     )
 
 
