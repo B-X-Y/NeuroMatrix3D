@@ -4,6 +4,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    volumes:
+      - ./logs:/app/logs
     env_file:
       - path: .env
         required: false

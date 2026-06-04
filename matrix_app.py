@@ -1,3 +1,4 @@
+import logging
 import os
 import secrets
 import subprocess
@@ -14,6 +15,15 @@ from flask_limiter.util import get_remote_address
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from matrix_pipeline import generate_braille_model_from_text, translate_text_to_braille_text
+
+LOG_DIR = os.path.join(os.path.dirname(__file__), "logs")
+os.makedirs(LOG_DIR, exist_ok=True)
+logging.basicConfig(
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler(os.path.join(LOG_DIR, "app.log"), encoding="utf-8"),
+    ]
+)
 
 load_dotenv()
 
