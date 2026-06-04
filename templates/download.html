@@ -15,7 +15,8 @@
         })();
     </script>
 </head>
-<body data-status-url="{{ url_for("generation_status", job_id=job_id) }}">
+<body data-status-url="{{ url_for("generation_status", job_id=job_id) }}"
+      data-preview-url="{{ url_for("generation_preview", job_id=job_id) }}">
 <div class="page">
     <div class="container container-tight py-5">
         <div class="d-flex justify-content-end mb-3">
@@ -32,6 +33,12 @@
                     GitHub Repository
                 </a>
             </p>
+        </div>
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h4 mb-3">Braille Text Preview</h2>
+                <pre id="braille-preview" class="fs-3 text-body bg-transparent text-break text-wrap mb-0">Loading preview...</pre>
+            </div>
         </div>
         <div class="card shadow-sm">
             <div class="card-body text-center py-5">

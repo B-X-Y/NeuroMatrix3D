@@ -13,7 +13,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-from matrix_pipeline import generate_braille_model_from_text
+from matrix_pipeline import generate_braille_model_from_text, translate_text_to_braille_text
 
 load_dotenv()
 
@@ -188,6 +188,7 @@ def generate():
     text = request.form.get("text", "")
     if len(text) > MAX_TEXT_LENGTH:
         abort(400, description="Text exceeds maximum length.")
+    braille_preview = translate_text_to_braille_text(text)
     session_id = _get_or_create_session_id()
     generation_id = uuid.uuid4().hex[:7]
     job_id = uuid.uuid4().hex
@@ -220,6 +221,7 @@ def generate():
             "error": None,
             "filename": output_filename,
             "session_id": session_id,
+            "braille_preview": braille_preview,
             "created_at": time.time(),
         }
 
@@ -277,6 +279,25 @@ def generation_status(job_id):
             "error": error
         }
     )
+
+
+@app.route("/preview/<job_id>")
+@limiter.limit("420/minute", error_message="Please try again later.")
+@limiter.limit("70/minute", key_func=_get_or_create_session_id, error_message="Please try again later.")
+def generation_preview(job_id):
+    _cleanup_expired_temporary_models()
+    session_id = _get_or_create_session_id()
+    with job_lock:
+        job = generation_jobs.get(job_id)
+
+    if job is None or job.get("session_id") != session_id:
+        return jsonify({"status": "expired", "error": "Generation job not found."})
+
+    braille_preview = job.get("braille_preview")
+    if not isinstance(braille_preview, str):
+        return jsonify({"status": "error", "error": "Braille preview unavailable."})
+
+    return jsonify({"status": "ok", "braille_text": braille_preview})
 
 
 @app.route("/download/<filename>")

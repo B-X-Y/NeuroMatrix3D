@@ -3,6 +3,11 @@ import subprocess
 import louis
 
 
+def translate_text_to_braille_text(text: str) -> str:
+    tables = ["braille-patterns.cti", "en-us-g2.ctb"]
+    return louis.translateString(tables, text)
+
+
 def convert_braille_cell_to_dot_list(cell_char: str) -> list[int]:
     codepoint = ord(cell_char)
     dot_mask = codepoint - 0x2800
@@ -24,8 +29,7 @@ def generate_braille_model_from_text(
         max_page_width: float | None = None,
         gen_timeout_seconds: float | None = None,
 ) -> None:
-    tables = ["braille-patterns.cti", "en-us-g2.ctb"]
-    braille_text = louis.translateString(tables, text)
+    braille_text = translate_text_to_braille_text(text)
     dot_lists = convert_braille_string_to_dot_lists(braille_text)
     openscad_dot_lists = str(dot_lists).replace(" ", "")
 

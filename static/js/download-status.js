@@ -2,7 +2,9 @@ const generatingStatus = document.getElementById("generating-status");
 const generationError = document.getElementById("generation-error");
 const downloadLink = document.getElementById("download-link");
 const loadingSpinner = document.getElementById("loading-spinner");
+const braillePreview = document.getElementById("braille-preview");
 const statusUrl = document.body.dataset.statusUrl;
+const previewUrl = document.body.dataset.previewUrl;
 
 let stopped = false;
 
@@ -79,6 +81,38 @@ async function checkGenerationStatus() {
     }
 }
 
+async function loadBraillePreview() {
+    try {
+        const response = await fetch(previewUrl, {cache: "no-store"});
+
+        if (!response.ok) {
+            braillePreview.textContent = "Previewing braille text failed.";
+            return;
+        }
+
+        const data = await response.json();
+
+        if (data.status === "ok") {
+            braillePreview.textContent = data.braille_text;
+            return;
+        }
+
+        if (data.status === "error") {
+            braillePreview.textContent = data.error || "Braille preview unavailable.";
+            return;
+        }
+
+        if (data.status === "expired") {
+            braillePreview.textContent = data.error || "Generation job expired. Please generate again.";
+            return;
+        }
+
+        braillePreview.textContent = "Unknown braille preview status.";
+    } catch (error) {
+        braillePreview.textContent = "Previewing braille text failed.";
+    }
+}
+
 async function pollGenerationStatus() {
     if (stopped) return;
 
@@ -96,5 +130,6 @@ if (!generatingStatus || !generationError || !downloadLink || !statusUrl) {
     console.error("Download status page is missing required elements.");
 } else {
     showGenerating("Preparing generation...");
+    void loadBraillePreview();
     void pollGenerationStatus();
 }
