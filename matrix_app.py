@@ -78,6 +78,7 @@ job_lock = Lock()
 generation_jobs: dict[str, dict[str, float | str | None]] = {}
 
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
+os.makedirs(MODELS_DIR, exist_ok=True)
 TEMP_FILE_TTL_SECONDS = 600
 GEN_TIMEOUT_SECONDS = 180
 MAX_TEXT_LENGTH = 800
@@ -348,7 +349,6 @@ def sitemap():
 
 
 if __name__ == "__main__":
-    os.makedirs(MODELS_DIR, exist_ok=True)
     host = os.getenv("MATRIX_HOST", "0.0.0.0")
     port = _parse_int_env("MATRIX_PORT", 5000)
     debug = _parse_bool_env("MATRIX_DEBUG", False)
