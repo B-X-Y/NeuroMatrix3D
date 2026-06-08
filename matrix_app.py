@@ -61,7 +61,7 @@ url_scheme = _get_env_str("MATRIX_URL_SCHEME")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1, x_prefix=1)
 cache = Cache(app, config={"CACHE_TYPE": "SimpleCache"})
 if _parse_bool_env("MATRIX_RATE_LIMIT_ENABLED", True):
-    limiter = Limiter(get_remote_address, app=app, default_limits=[])
+    limiter = Limiter(get_remote_address, app=app, default_limits=[], storage_uri="memory://")
 else:
     class UnlimitedLimiter:
         @staticmethod
