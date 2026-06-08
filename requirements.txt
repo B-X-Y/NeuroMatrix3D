@@ -1,5 +1,6 @@
 flask
 flask-caching
 flask-limiter
+gunicorn
 python-dotenv
 werkzeug

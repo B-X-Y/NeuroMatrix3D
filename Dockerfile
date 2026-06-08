@@ -20,4 +20,4 @@ COPY matrix_app.py .
 COPY static ./static
 COPY templates ./templates
 
-CMD ["python3", "matrix_app.py"]
+CMD ["bash", "-c", "gunicorn -w 1 --threads 2 -b ${MATRIX_HOST:-0.0.0.0}:${MATRIX_PORT:-5000} matrix_app:app"]
