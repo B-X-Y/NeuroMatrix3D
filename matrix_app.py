@@ -7,8 +7,7 @@ import uuid
 from threading import Lock, Semaphore, Thread
 
 from dotenv import load_dotenv
-from flask import Flask, Response, abort, jsonify, render_template, request, send_file, send_from_directory, session, \
-    url_for
+from flask import Flask, Response, abort, jsonify, render_template, request, send_from_directory, session, url_for
 from flask_caching import Cache
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -321,7 +320,7 @@ def download(filename):
         abort(404, description="File not found or no longer available.")
 
     try:
-        return send_file(os.path.join(MODELS_DIR, filename), as_attachment=True)
+        return send_from_directory(MODELS_DIR, filename, as_attachment=True)
     except FileNotFoundError:
         abort(404, description="File expired or already removed.")
 
