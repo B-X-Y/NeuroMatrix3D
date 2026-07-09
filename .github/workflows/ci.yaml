@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install system dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y --no-install-recommends python3-louis openscad
+      - name: Install pip dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest
+      - name: Run tests
+        run: python -m pytest tests/
