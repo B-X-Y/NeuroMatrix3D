@@ -177,6 +177,11 @@ def _run_generation_job(
         gen_semaphore.release()
 
 
+@app.route("/livez", methods=["GET"])
+def liveness():
+    return jsonify({"status": "ok"}), 200
+
+
 @app.route("/favicon.ico")
 def favicon():
     return send_from_directory(app.static_folder, "favicon.ico")
