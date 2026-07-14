@@ -182,6 +182,11 @@ def liveness():
     return jsonify({"status": "ok"}), 200
 
 
+@app.route("/readyz", methods=["GET"])
+def readiness():
+    return jsonify({"status": "ready"}), 200
+
+
 @app.route("/favicon.ico")
 def favicon():
     return send_from_directory(app.static_folder, "favicon.ico")
