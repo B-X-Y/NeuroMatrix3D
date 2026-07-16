@@ -4,6 +4,7 @@ import secrets
 import subprocess
 import time
 import uuid
+from dataclasses import dataclass
 from threading import Lock, Semaphore, Thread
 
 from dotenv import load_dotenv
@@ -74,7 +75,19 @@ MAX_QUEUE_SIZE = 5
 
 gen_semaphore = Semaphore(MAX_CONCURRENT_GENERATIONS)
 job_lock = Lock()
-generation_jobs: dict[str, dict[str, float | str | None]] = {}
+
+
+@dataclass(slots=True)
+class GenerationJob:
+    status: str
+    filename: str
+    session_id: str
+    braille_preview: str
+    created_at: float
+    error: str | None = None
+
+
+generation_jobs: dict[str, GenerationJob] = {}
 
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
 os.makedirs(MODELS_DIR, exist_ok=True)
@@ -100,8 +113,8 @@ def _cleanup_expired_temporary_models() -> None:
     with job_lock:
         expired_job_ids: list[str] = []
         for job_id, job in list(generation_jobs.items()):
-            created_at = job.get("created_at")
-            status = job.get("status")
+            created_at = job.created_at
+            status = job.status
             if isinstance(created_at, (int, float)) and created_at < cutoff and status != "running":
                 expired_job_ids.append(job_id)
 
@@ -137,7 +150,7 @@ def _run_generation_job(
         if job is None:
             gen_semaphore.release()
             return
-        job["status"] = "running"
+        job.status = "running"
 
     try:
         generate_braille_model_from_text(
@@ -157,22 +170,22 @@ def _run_generation_job(
         with job_lock:
             job = generation_jobs.get(job_id)
             if job is not None:
-                job["status"] = "error"
-                job["error"] = "Generation timed out."
+                job.status = "error"
+                job.error = "Generation timed out."
     except Exception:
         if os.path.exists(output_path):
             os.remove(output_path)
         with job_lock:
             job = generation_jobs.get(job_id)
             if job is not None:
-                job["status"] = "error"
-                job["error"] = "Generation failed."
+                job.status = "error"
+                job.error = "Generation failed."
     else:
         with job_lock:
             job = generation_jobs.get(job_id)
             if job is not None:
-                job["status"] = "done"
-                job["error"] = None
+                job.status = "done"
+                job.error = None
     finally:
         gen_semaphore.release()
 
@@ -232,18 +245,18 @@ def generate():
     max_page_width = get_float_or_none("max_page_width")
 
     with job_lock:
-        pending_jobs = sum(1 for job in generation_jobs.values() if job.get("status") == "pending")
+        pending_jobs = sum(1 for job in generation_jobs.values() if job.status == "pending")
         if pending_jobs >= MAX_QUEUE_SIZE:
             abort(503, description="Generation queue is full. Please try again later.")
 
-        generation_jobs[job_id] = {
-            "status": "pending",
-            "error": None,
-            "filename": output_filename,
-            "session_id": session_id,
-            "braille_preview": braille_preview,
-            "created_at": time.time(),
-        }
+        generation_jobs[job_id] = GenerationJob(
+            status="pending",
+            error=None,
+            filename=output_filename,
+            session_id=session_id,
+            braille_preview=braille_preview,
+            created_at=time.time(),
+        )
 
     generation_thread = Thread(
         target=_run_generation_job,
@@ -282,14 +295,14 @@ def generation_status(job_id):
     with job_lock:
         job = generation_jobs.get(job_id)
 
-    if job is None or job.get("session_id") != session_id:
+    if job is None or job.session_id != session_id:
         return jsonify({"status": "expired", "error": "Generation job not found."})
 
-    status = job.get("status")
+    status = job.status
     if not isinstance(status, str):
         status = "error"
 
-    error = job.get("error")
+    error = job.error
     if error is not None and not isinstance(error, str):
         error = "Generation failed."
 
@@ -310,10 +323,10 @@ def generation_preview(job_id):
     with job_lock:
         job = generation_jobs.get(job_id)
 
-    if job is None or job.get("session_id") != session_id:
+    if job is None or job.session_id != session_id:
         return jsonify({"status": "expired", "error": "Generation job not found."})
 
-    braille_preview = job.get("braille_preview")
+    braille_preview = job.braille_preview
     if not isinstance(braille_preview, str):
         return jsonify({"status": "error", "error": "Braille preview unavailable."})
 
