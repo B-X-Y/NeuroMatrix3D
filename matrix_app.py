@@ -105,11 +105,8 @@ def _cleanup_expired_temporary_models() -> None:
         if not entry.is_file() or entry.suffix != ".stl":
             continue
 
-        try:
-            if entry.stat().st_mtime < cutoff:
-                entry.unlink()
-        except FileNotFoundError:
-            continue
+        if entry.stat().st_mtime < cutoff:
+            entry.unlink(missing_ok=True)
 
     with job_lock:
         expired_job_ids: list[str] = []
@@ -166,16 +163,14 @@ def _run_generation_job(
             gen_timeout_seconds=GEN_TIMEOUT_SECONDS,
         )
     except subprocess.TimeoutExpired:
-        if output_path.exists():
-            output_path.unlink()
+        output_path.unlink(missing_ok=True)
         with job_lock:
             job = generation_jobs.get(job_id)
             if job is not None:
                 job.status = "error"
                 job.error = "Generation timed out."
     except Exception:
-        if output_path.exists():
-            output_path.unlink()
+        output_path.unlink(missing_ok=True)
         with job_lock:
             job = generation_jobs.get(job_id)
             if job is not None:
