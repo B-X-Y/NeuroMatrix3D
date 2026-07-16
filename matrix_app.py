@@ -5,6 +5,7 @@ import subprocess
 import time
 import uuid
 from dataclasses import dataclass
+from pathlib import Path
 from threading import Lock, Semaphore, Thread
 
 from dotenv import load_dotenv
@@ -16,12 +17,12 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 from matrix_pipeline import generate_braille_model_from_text, translate_text_to_braille_text
 
-LOG_DIR = os.path.join(os.path.dirname(__file__), "logs")
-os.makedirs(LOG_DIR, exist_ok=True)
+LOG_DIR = Path(__file__).parent / "logs"
+LOG_DIR.mkdir(exist_ok=True)
 logging.basicConfig(
     handlers=[
         logging.StreamHandler(),
-        logging.FileHandler(os.path.join(LOG_DIR, "app.log"), encoding="utf-8"),
+        logging.FileHandler(LOG_DIR / "app.log", encoding="utf-8"),
     ]
 )
 
@@ -89,24 +90,24 @@ class GenerationJob:
 
 generation_jobs: dict[str, GenerationJob] = {}
 
-MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
-os.makedirs(MODELS_DIR, exist_ok=True)
+MODELS_DIR = Path(__file__).parent / "models"
+MODELS_DIR.mkdir(exist_ok=True)
 TEMP_FILE_TTL_SECONDS = 600
 GEN_TIMEOUT_SECONDS = 180
 MAX_TEXT_LENGTH = 800
 
 
 def _cleanup_expired_temporary_models() -> None:
-    os.makedirs(MODELS_DIR, exist_ok=True)
+    MODELS_DIR.mkdir(exist_ok=True)
     cutoff = time.time() - TEMP_FILE_TTL_SECONDS
 
-    for entry in os.scandir(MODELS_DIR):
-        if not entry.is_file() or not entry.name.endswith(".stl"):
+    for entry in MODELS_DIR.iterdir():
+        if not entry.is_file() or entry.suffix != ".stl":
             continue
 
         try:
             if entry.stat().st_mtime < cutoff:
-                os.remove(entry.path)
+                entry.unlink()
         except FileNotFoundError:
             continue
 
@@ -135,7 +136,7 @@ def _get_or_create_session_id() -> str:
 def _run_generation_job(
         job_id: str,
         text: str,
-        output_path: str,
+        output_path: Path,
         dot_radius: float | None,
         dot_spacing: float | None,
         row_spacing: float | None,
@@ -155,7 +156,7 @@ def _run_generation_job(
     try:
         generate_braille_model_from_text(
             text,
-            output_path,
+            str(output_path),
             dot_radius=dot_radius,
             dot_spacing=dot_spacing,
             row_spacing=row_spacing,
@@ -165,16 +166,16 @@ def _run_generation_job(
             gen_timeout_seconds=GEN_TIMEOUT_SECONDS,
         )
     except subprocess.TimeoutExpired:
-        if os.path.exists(output_path):
-            os.remove(output_path)
+        if output_path.exists():
+            output_path.unlink()
         with job_lock:
             job = generation_jobs.get(job_id)
             if job is not None:
                 job.status = "error"
                 job.error = "Generation timed out."
     except Exception:
-        if os.path.exists(output_path):
-            os.remove(output_path)
+        if output_path.exists():
+            output_path.unlink()
         with job_lock:
             job = generation_jobs.get(job_id)
             if job is not None:
@@ -226,7 +227,7 @@ def generate():
     generation_id = uuid.uuid4().hex[:7]
     job_id = uuid.uuid4().hex
     output_filename = f"braille_model_{session_id[:7]}_{generation_id}.stl"
-    output_path = os.path.join(MODELS_DIR, output_filename)
+    output_path = MODELS_DIR / output_filename
 
     def get_float_or_none(key):
         value = request.form.get(key, "").strip()
