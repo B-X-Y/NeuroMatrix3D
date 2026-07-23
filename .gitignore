@@ -1,5 +1,14 @@
+# Environment variables
 .env
+
+# Python virtual environment
 .venv/
+
+# Python cache
 __pycache__/
+
+# Logs
 logs/
+
+# Temporary STL files
 models/
