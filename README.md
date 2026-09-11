@@ -7,6 +7,15 @@
 </p>
 
 <p align="center">
+    <a href="https://github.com/B-X-Y/NeuroMatrix3D/actions/workflows/ci.yaml">
+        <img src="https://github.com/B-X-Y/NeuroMatrix3D/actions/workflows/ci.yaml/badge.svg" alt="CI">
+    </a>
+    <a href="https://github.com/B-X-Y/NeuroMatrix3D/blob/main/LICENSE">
+        <img src="https://img.shields.io/github/license/B-X-Y/NeuroMatrix3D" alt="MIT License">
+    </a>
+</p>
+
+<p align="center">
     <img src="assets/icon-light.svg" alt="NeuroMatrix3D Logo" width="300">
 </p>
 
