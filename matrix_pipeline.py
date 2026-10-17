@@ -4,7 +4,7 @@ import louis
 
 
 def translate_text_to_braille_text(text: str) -> str:
-    tables = ["braille-patterns.cti", "en-us-g2.ctb"]
+    tables = ["braille-patterns.cti", "en-ueb-g2.ctb"]
     return louis.translateString(tables, text)
 
 
