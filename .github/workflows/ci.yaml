@@ -3,16 +3,8 @@ name: CI
 on:
   push:
     branches: [ main ]
-    paths:
-      - ".github/workflows/ci.yaml"
-      - "requirements.txt"
-      - "**/*.py"
   pull_request:
     branches: [ main ]
-    paths:
-      - ".github/workflows/ci.yaml"
-      - "requirements.txt"
-      - "**/*.py"
 
 permissions:
   contents: read
@@ -32,3 +24,37 @@ jobs:
           pip install pytest
       - name: Run tests
         run: python -m pytest tests/
+
+  build:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Build Docker image
+        run: docker build --tag "ghcr.io/${GITHUB_REPOSITORY,,}:latest" .
+
+  publish:
+    needs: test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    concurrency: ghcr-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Build Docker image
+        run: docker build --tag "ghcr.io/${GITHUB_REPOSITORY,,}:latest" .
+
+      - name: Publish latest to GHCR
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "$GHCR_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+          docker push "ghcr.io/${GITHUB_REPOSITORY,,}:latest"
