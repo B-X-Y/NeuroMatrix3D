@@ -1,9 +1,8 @@
 services:
   app:
     container_name: neuromatrix3d
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/b-x-y/neuromatrix3d:latest
+    pull_policy: always
     volumes:
       - ./logs:/app/logs
     env_file:

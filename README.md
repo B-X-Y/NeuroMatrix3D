@@ -132,7 +132,7 @@ apt update && apt install -y git
 git clone https://github.com/B-X-Y/NeuroMatrix3D.git
 cd NeuroMatrix3D
 
-docker compose up -d --build
+docker compose up -d
 ```
 
 ### Accessing the Application
