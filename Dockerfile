@@ -17,6 +17,7 @@ RUN pip3 install --break-system-packages --no-cache-dir -r requirements.txt
 COPY matrix_pipeline.py .
 COPY matrix_generator.scad .
 COPY matrix_app.py .
+COPY matrix_health_check.py .
 COPY static ./static
 COPY templates ./templates
 
